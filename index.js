@@ -99,7 +99,8 @@ let config = {
   voiceByChatUser: {},
   voiceSwitch: {},
   currentVoiceName: "",
-  fishApiKey: "",
+  ttsApiKey: "",
+ttsApiBase: "",
   recordGroups: [],
   recordContextLimit: {},
   contextDefault: 100,
@@ -1160,39 +1161,40 @@ Content policy {
     return "";
   }
 
-  async function fishTts(text, voiceId) {
-    const os = await import("node:os");
-    const safeText = String(text).slice(0, 300);
-    if (!config.fishApiKey) return null;
-    try {
-      const body = {
-        text: safeText,
-        format: "mp3",
-      };
-      if (voiceId) body.reference_id = voiceId;
-      const res = await fetchWithTimeout("https://api.fish.audio/v1/tts", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${config.fishApiKey}`,
-          "Content-Type": "application/json",
-          "model": "s2.1-pro-free",
-        },
-        body: JSON.stringify(body),
-      }, 60000);
-      if (!res.ok) {
-        log("Fish Audio HTTP", res.status);
-        return null;
-      }
-      const buf = Buffer.from(await res.arrayBuffer());
-      if (!buf || buf.length < 1000) return null;
-      const p = path.join(os.tmpdir(), `tts_${Date.now()}.mp3`);
-      fs.writeFileSync(p, buf);
-      return { path: p, voiceUsed: "Fish Audio", fallback: false };
-    } catch (e) {
-      log("Fish Audio 失败:", e.message);
+  async function customTts(text, voiceId) {
+  const os = await import("node:os");
+  const safeText = String(text).slice(0, 300);
+  if (!config.ttsApiKey) return null;
+  if (!config.ttsApiBase) return null;
+  try {
+    const body = {
+      text: safeText,
+      format: "mp3",
+    };
+    if (voiceId) body.reference_id = voiceId;
+    const res = await fetchWithTimeout(config.ttsApiBase, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${config.ttsApiKey}`,
+        "Content-Type": "application/json",
+        "model": "s2.1-pro-free",
+      },
+      body: JSON.stringify(body),
+    }, 60000);
+    if (!res.ok) {
+      log("自定义 TTS HTTP", res.status);
       return null;
     }
+    const buf = Buffer.from(await res.arrayBuffer());
+    if (!buf || buf.length < 1000) return null;
+    const p = path.join(os.tmpdir(), `tts_${Date.now()}.mp3`);
+    fs.writeFileSync(p, buf);
+    return { path: p, voiceUsed: "自定义音色", fallback: false };
+  } catch (e) {
+    log("自定义 TTS 失败:", e.message);
+    return null;
   }
+}
 
   async function fallbackTts(text) {
     const os = await import("node:os");
@@ -3152,7 +3154,8 @@ IP：${ipLine}`;
       setTimeout(() => {
         try {
           import("node:child_process").then(({ exec }) => {
-            exec("pm2 restart tg-ai", () => {});
+                               const pmName = process.env.PM2_NAME;
+          if (pmName) exec(`pm2 restart ${pmName}`, () => {});
           });
         } catch (e) {}
       }, 2000);
@@ -3513,7 +3516,7 @@ Tavily: ${mask(tavily)}`,
     // 换ttskey 保持参数式
     m = cmd.match(/^换ttskey\s+(\S+)$/);
     if (m) {
-      config.fishApiKey = m[1];
+      config.ttsApiKey = m[1];
       saveConfig();
       await client.sendMessage(msg.peerId, {
         message: `已更新 TTS key，立即生效。`,
@@ -5348,7 +5351,7 @@ Tavily: ${mask(tavily)}`,
           .replace(/^#{1,6}\s+/gm, "")
           .trim();
 
-        let ttsResult = await fishTts(sayText, voiceId);
+       let ttsResult = await customTts(sayText, voiceId);
         if (!ttsResult) ttsResult = await fallbackTts(sayText);
 
         if (!ttsResult) {
@@ -5400,7 +5403,7 @@ Tavily: ${mask(tavily)}`,
         const voiceId = voiceName && config.voiceBook
           ? (config.voiceBook[voiceName] || "")
           : "";
-        let ttsResult = await fishTts(ttsText, voiceId);
+        let ttsResult = await customTts(ttsText, voiceId);
         if (!ttsResult) {
           ttsResult = await fallbackTts(ttsText);
         }
