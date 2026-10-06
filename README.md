@@ -1,10 +1,12 @@
 # tgai-userbot
 
-Telegram 多功能 AI 机器人，基于个人账号接入OpenAI SDK。
+Telegram 多功能 AI 机器人，基于个人账号接入 + OpenAI SDK。
 
-说明：本项目不是开箱即用，也不自带任何 API。使用前需自行准备 Telegram 登录凭证和 AI 模型 API Key。
+说明：本项目不是开箱即用，也不自带任何 API。使用前需自行准备必要的账号凭证和 AI 模型 API Key。
 
 免责声明：本项目仅供学习与研究使用。使用者须自行遵守 Telegram 服务条款及所在地区法律法规。因使用本项目产生的任何后果，由使用者自行承担，作者不承担任何责任。
+
+建议：请使用专用的测试账号运行，不要使用你的主账号或重要账号。个人账号自动化存在被平台限制或封禁的风险，请自行评估。
 
 ## 功能
 
@@ -23,7 +25,7 @@ Telegram 多功能 AI 机器人，基于个人账号接入OpenAI SDK。
 语音
 - 语音回复，支持音色库与语音人格
 - 音色可切换，可绑定到群或某个用户
-- 支持自定义 TTS 音色，无自定义时使用自带默认 TTS 音色
+- 支持自定义 TTS 音色，无自定义时使用默认 TTS 音色，默认音色自带
 
 文本工具
 - 多语言翻译
@@ -81,7 +83,7 @@ Telegram 多功能 AI 机器人，基于个人账号接入OpenAI SDK。
 - 维基百科、维基数据、DuckDuckGo
 - IP 归属查询
 - 一言、古诗、图书查询
-- 文字转语音（免费音色，无 Key 也能用）
+- 文字转语音（默认音色自带，无 Key 也能用）
 - 短网址还原、Base64、URL 编解码、摩斯电码
 - 哈希、UUID、JSON 格式化、进制转换
 - 单位换算、汇率换算、日期差、随机数
@@ -95,8 +97,8 @@ Telegram 多功能 AI 机器人，基于个人账号接入OpenAI SDK。
 ## 前置条件
 
 - Node.js 18 以上
-- 一个 Telegram 个人账号（不是 Bot API 机器人）
-- 在 https://my.telegram.org 申请到的 api_id 和 api_hash
+- 一个个人账号（建议使用专用测试账号）
+- 必要的账号凭证
 - 至少一个 AI 模型的 API Key
 
 ## 安装
@@ -112,13 +114,14 @@ cp .env.example .env
 
 编辑 .env，填入：
 
-- TELEGRAM_API_ID：在 https://my.telegram.org 申请
-- TELEGRAM_API_HASH：同上
-- MY_USERNAME：机器人账号用户名（不带 @）
-- OWNER_ID：管理员自己的 Telegram 数字 ID
+- TELEGRAM_API_ID
+- TELEGRAM_API_HASH
+- MY_USERNAME：机器人账号用户名，不带 @
+- OWNER_ID：管理员自己的数字 ID
 - CUSTOM_API_KEY：你的 AI 接口 Key
 - CUSTOM_API_BASE：你的 AI 接口地址
 - CUSTOM_API_MODEL：你的模型名
+- PM2_NAME：你用 pm2 启动脚本时起的进程名，用于机器人内的「重启」命令
 
 其余搜索 Key 为可选项，不填不影响基础对话。
 
@@ -128,12 +131,12 @@ cp .env.example .env
 node index.js
 ```
 
-首次运行会提示输入手机号、验证码，登录成功后凭证会保存到 .ai-session。
+首次运行会提示输入手机号、验证码，登录成功后凭证会保存到本地。
 
 长期运行建议用 pm2：
 
 ```
-pm2 start index.js --name tg-ai
+pm2 start index.js --name mybot
 pm2 save
 pm2 startup
 ```
