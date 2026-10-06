@@ -125,7 +125,7 @@ cp .env.example .env
 
 ## 配置（一步一步填 .env）
 
-打开 .env 文件，按下面的说明一项一项填。每一项都有示例，照着填你自己的就行。
+打开 .env 文件，按下面的说明一项一项填。每一项都有示例，照着你自己的情况填。
 
 【第一组：Telegram 登录凭证】
 
@@ -141,9 +141,11 @@ TELEGRAM_API_ID 和 TELEGRAM_API_HASH 这两项，是 Telegram 给你的账号�
 6. api_id 是一串数字，填到 TELEGRAM_API_ID
 7. api_hash 是一串字母数字，填到 TELEGRAM_API_HASH
 
+填好长这样（仅示例，值换成你自己的）：
+
 ```
-TELEGRAM_API_ID=1234567
-TELEGRAM_API_HASH=abcdef0123456789abcdef0123456789
+TELEGRAM_API_ID=你的api_id
+TELEGRAM_API_HASH=你的api_hash
 ```
 
 【第二组：机器人自己的用户名】
@@ -155,6 +157,8 @@ MY_USERNAME 填机器人账号的用户名，不带 @。
 ```
 MY_USERNAME=abc123
 ```
+
+（仅示例，值换成你自己的。）
 
 别人在群里 @abc123 就会触发 AI。注意这个用户名是机器人账号的，不是你的。
 
@@ -172,6 +176,8 @@ OWNER_ID 填你自己的 Telegram 数字 ID。注意，这不是用户名，是�
 ```
 OWNER_ID=123456789
 ```
+
+（仅示例，值换成你自己的。）
 
 填了这个，你发 @ai 开头的命令时，机器人才认得你是号主，才会响应管理命令。
 
@@ -191,6 +197,8 @@ AI_API_BASE=https://api.deepseek.com
 AI_API_MODEL=deepseek-chat
 ```
 
+（仅示例，值换成你自己的。）
+
 如果你用的是别的服务，就把 AI_API_BASE 和 AI_API_MODEL 换成那家的地址和模型名，AI_API_KEY 换成那家的 Key。
 
 【第五组：pm2 进程名】
@@ -209,6 +217,8 @@ pm2 start index.js --name mybot
 PM2_NAME=mybot
 ```
 
+（仅示例，值换成你自己的。）
+
 为什么要填：机器人里有个「重启」命令，会执行 pm2 restart，需要知道你的进程名。不填这个，「重启」命令不生效，其他功能不受影响。
 
 【第六组：搜索接口（可选）】
@@ -226,6 +236,8 @@ SEARCH_API_BASE=https://你的第一个搜索接口地址
 SEARCH_API_BASE_2=https://你的第二个搜索接口地址
 SEARCH_API_KEY=你的搜索接口key
 ```
+
+（仅示例，值换成你自己的。）
 
 【关于 API Key 的说明】
 
