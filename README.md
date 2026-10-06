@@ -125,11 +125,11 @@ cp .env.example .env
 
 ## 配置（一步一步填 .env）
 
-打开 .env 文件，按下面的说明一项一项填。每一项都有示例，照着你自己的情况填。
+打开 .env 文件，按下面的说明一项一项填。下面每一组都是先讲怎么弄，再给一个示例，示例只是演示格式，你要换成自己的值。
 
 【第一组：Telegram 登录凭证】
 
-TELEGRAM_API_ID 和 TELEGRAM_API_HASH 这两项，是 Telegram 给你的账号凭证，必须自己申请。
+TELEGRAM_API_ID 和 TELEGRAM_API_HASH 这两项，是 Telegram 给你的账号凭证，必须自己申请。示例只是演示格式，你要换成自己申请到的值。
 
 怎么申请：
 
@@ -141,7 +141,7 @@ TELEGRAM_API_ID 和 TELEGRAM_API_HASH 这两项，是 Telegram 给你的账号�
 6. api_id 是一串数字，填到 TELEGRAM_API_ID
 7. api_hash 是一串字母数字，填到 TELEGRAM_API_HASH
 
-填好长这样（仅示例，值换成你自己的）：
+示例（仅演示格式，值换成你自己的）：
 
 ```
 TELEGRAM_API_ID=你的api_id
@@ -150,34 +150,45 @@ TELEGRAM_API_HASH=你的api_hash
 
 【第二组：机器人自己的用户名】
 
-MY_USERNAME 填机器人账号的用户名，不带 @。
+MY_USERNAME 填机器人账号的 Telegram「用户名」。
 
-例如你打算用 @abc123 这个账号跑机器人，就填：
+什么叫 Telegram 用户名？打开 Telegram，进「设置」→「用户名」，那一栏里显示的就是你的用户名，一串英文字母或数字，前面带一个 @。它是你账号的公开标识，别人 @它 就能找到你。
+
+填的时候要去掉开头的 @，只填后面的部分。
+
+举个例子：假设你给机器人账号设的用户名是 @mybot123，那：
+
+- Telegram 设置里显示：@mybot123
+- .env 里填：mybot123
+
+示例（仅演示格式，值换成你自己的）：
 
 ```
-MY_USERNAME=abc123
+MY_USERNAME=mybot123
 ```
 
-（仅示例，值换成你自己的。）
+填好之后，别人在群里打 @mybot123，就会触发 AI。
 
-别人在群里 @abc123 就会触发 AI。注意这个用户名是机器人账号的，不是你的。
+注意：这个用户名是机器人账号的，不是你的个人账号。机器人账号建议用小号。
 
 【第三组：你自己的数字 ID】
 
 OWNER_ID 填你自己的 Telegram 数字 ID。注意，这不是用户名，是一串纯数字。
+
+用户名（第二组那个）和数字 ID 是两个东西：用户名是给人看的 @xxx，数字 ID 是系统内部用的纯数字。这里要的是数字 ID。
 
 怎么查：
 
 1. 在 Telegram 里搜索 @userinfobot
 2. 点开它，随便发一条消息（比如发个 hi）
 3. 它会回你一条消息，里面有 Id 后面那串数字
-4. 那串数字就是你的 ID，填到 OWNER_ID
+4. 那串数字就是你的数字 ID，填到 OWNER_ID
+
+示例（仅演示格式，值换成你自己的）：
 
 ```
 OWNER_ID=123456789
 ```
-
-（仅示例，值换成你自己的。）
 
 填了这个，你发 @ai 开头的命令时，机器人才认得你是号主，才会响应管理命令。
 
@@ -185,19 +196,19 @@ OWNER_ID=123456789
 
 这三项是你自己用的 AI 模型接口。任何「OpenAI 兼容」的接口都行，比如 DeepSeek、硅基流动、OpenRouter 等。
 
-以 DeepSeek 为例：
+以 DeepSeek 为例，你需要填三样：
 
-- AI_API_KEY：去 DeepSeek 官网申请一个 Key，填这里
+- AI_API_KEY：去 DeepSeek 官网申请一个 Key
 - AI_API_BASE：DeepSeek 的接口地址是 https://api.deepseek.com
 - AI_API_MODEL：DeepSeek 的模型名是 deepseek-chat
+
+示例（仅演示格式，值换成你自己的）：
 
 ```
 AI_API_KEY=sk-xxxxxxxxxxxxxxxx
 AI_API_BASE=https://api.deepseek.com
 AI_API_MODEL=deepseek-chat
 ```
-
-（仅示例，值换成你自己的。）
 
 如果你用的是别的服务，就把 AI_API_BASE 和 AI_API_MODEL 换成那家的地址和模型名，AI_API_KEY 换成那家的 Key。
 
@@ -211,13 +222,13 @@ PM2_NAME 是你用 pm2 启动脚本时起的名字。
 pm2 start index.js --name mybot
 ```
 
-上面这条命令里，--name 后面的 mybot 就是进程名。你就把 mybot 填到 PM2_NAME：
+上面这条命令里，--name 后面的 mybot 就是进程名。你就把 mybot 填到 PM2_NAME。
+
+示例（仅演示格式，值换成你自己的）：
 
 ```
 PM2_NAME=mybot
 ```
-
-（仅示例，值换成你自己的。）
 
 为什么要填：机器人里有个「重启」命令，会执行 pm2 restart，需要知道你的进程名。不填这个，「重启」命令不生效，其他功能不受影响。
 
@@ -231,13 +242,13 @@ PM2_NAME=mybot
 - SEARCH_API_BASE_2：第二个搜索接口的地址
 - SEARCH_API_KEY：两个接口共用的 Key
 
+示例（仅演示格式，值换成你自己的）：
+
 ```
 SEARCH_API_BASE=https://你的第一个搜索接口地址
 SEARCH_API_BASE_2=https://你的第二个搜索接口地址
 SEARCH_API_KEY=你的搜索接口key
 ```
-
-（仅示例，值换成你自己的。）
 
 【关于 API Key 的说明】
 
