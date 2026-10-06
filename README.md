@@ -97,53 +97,195 @@ Telegram 多功能 AI 机器人，基于个人账号接入 + OpenAI SDK。
 ## 前置条件
 
 - Node.js 18 以上
-- 一个个人账号（建议使用专用测试账号）
-- 必要的账号凭证
-- 至少一个 AI 模型的 API Key
+- 一个 Telegram 个人账号（强烈建议使用专门注册的小号，不要用你的主账号）
+- 一个 AI 模型的 API Key
 
 ## 安装
+
+第一步，把项目下载到本地：
 
 ```
 git clone <你的仓库地址>
 cd tgai-userbot
+```
+
+第二步，安装依赖：
+
+```
 npm install dotenv telegram input openai
+```
+
+第三步，复制一份配置模板：
+
+```
 cp .env.example .env
 ```
 
-## 配置
+现在文件夹里多了一个 .env 文件，接下来要往里面填东西。
 
-编辑 .env，填入：
+## 配置（一步一步填 .env）
 
-- TELEGRAM_API_ID：账号凭证
-- TELEGRAM_API_HASH：账号凭证
-- MY_USERNAME：机器人账号用户名，不带 @
-- OWNER_ID：号主自己的数字 ID
-- AI_API_KEY：你的 AI 接口 Key
-- AI_API_BASE：你的 AI 接口地址
-- AI_API_MODEL：你的模型名
-- PM2_NAME：你用 pm2 启动脚本时起的进程名，用于机器人内的「重启」命令
+打开 .env 文件，按下面的说明一项一项填。每一项都有示例，照着填你自己的就行。
 
-可选（不填不影响基础对话）：
+【第一组：Telegram 登录凭证】
 
-- SEARCH_API_BASE：搜索接口一地址
-- SEARCH_API_BASE_2：搜索接口二地址
-- SEARCH_API_KEY：两个搜索接口共用的 Key
+TELEGRAM_API_ID 和 TELEGRAM_API_HASH 这两项，是 Telegram 给你的账号凭证，必须自己申请。
+
+怎么申请：
+
+1. 浏览器打开 https://my.telegram.org
+2. 用你的手机号登录（页面会让你收一个验证码）
+3. 登录后点「API development tools」
+4. 随便填个 App title 和 Short name，其他可以留空，点提交
+5. 提交后页面会显示两个值：api_id 和 api_hash
+6. api_id 是一串数字，填到 TELEGRAM_API_ID
+7. api_hash 是一串字母数字，填到 TELEGRAM_API_HASH
+
+```
+TELEGRAM_API_ID=1234567
+TELEGRAM_API_HASH=abcdef0123456789abcdef0123456789
+```
+
+【第二组：机器人自己的用户名】
+
+MY_USERNAME 填机器人账号的用户名，不带 @。
+
+例如你打算用 @abc123 这个账号跑机器人，就填：
+
+```
+MY_USERNAME=abc123
+```
+
+别人在群里 @abc123 就会触发 AI。注意这个用户名是机器人账号的，不是你的。
+
+【第三组：你自己的数字 ID】
+
+OWNER_ID 填你自己的 Telegram 数字 ID。注意，这不是用户名，是一串纯数字。
+
+怎么查：
+
+1. 在 Telegram 里搜索 @userinfobot
+2. 点开它，随便发一条消息（比如发个 hi）
+3. 它会回你一条消息，里面有 Id 后面那串数字
+4. 那串数字就是你的 ID，填到 OWNER_ID
+
+```
+OWNER_ID=123456789
+```
+
+填了这个，你发 @ai 开头的命令时，机器人才认得你是号主，才会响应管理命令。
+
+【第四组：AI 接口】
+
+这三项是你自己用的 AI 模型接口。任何「OpenAI 兼容」的接口都行，比如 DeepSeek、硅基流动、OpenRouter 等。
+
+以 DeepSeek 为例：
+
+- AI_API_KEY：去 DeepSeek 官网申请一个 Key，填这里
+- AI_API_BASE：DeepSeek 的接口地址是 https://api.deepseek.com
+- AI_API_MODEL：DeepSeek 的模型名是 deepseek-chat
+
+```
+AI_API_KEY=sk-xxxxxxxxxxxxxxxx
+AI_API_BASE=https://api.deepseek.com
+AI_API_MODEL=deepseek-chat
+```
+
+如果你用的是别的服务，就把 AI_API_BASE 和 AI_API_MODEL 换成那家的地址和模型名，AI_API_KEY 换成那家的 Key。
+
+【第五组：pm2 进程名】
+
+PM2_NAME 是你用 pm2 启动脚本时起的名字。
+
+什么叫 pm2？pm2 是一个让脚本在后台一直运行的工具。你启动机器人时会用这样的命令：
+
+```
+pm2 start index.js --name mybot
+```
+
+上面这条命令里，--name 后面的 mybot 就是进程名。你就把 mybot 填到 PM2_NAME：
+
+```
+PM2_NAME=mybot
+```
+
+为什么要填：机器人里有个「重启」命令，会执行 pm2 restart，需要知道你的进程名。不填这个，「重启」命令不生效，其他功能不受影响。
+
+【第六组：搜索接口（可选）】
+
+这三项是联网搜索用的，可以不填。不填的话，联网搜索功能用不了，其他功能正常。
+
+如果你有搜索接口，填：
+
+- SEARCH_API_BASE：第一个搜索接口的地址
+- SEARCH_API_BASE_2：第二个搜索接口的地址
+- SEARCH_API_KEY：两个接口共用的 Key
+
+```
+SEARCH_API_BASE=https://你的第一个搜索接口地址
+SEARCH_API_BASE_2=https://你的第二个搜索接口地址
+SEARCH_API_KEY=你的搜索接口key
+```
+
+【关于 API Key 的说明】
+
+.env 里所有 API Key 都要自己申请，本项目不自带、不提供、不代充。填完之后不要把 .env 发给别人，里面是你的私人凭证。
 
 ## 运行
+
+填完 .env，在项目目录里执行：
 
 ```
 node index.js
 ```
 
-首次运行会提示输入手机号、验证码，登录成功后凭证会保存到本地。
+第一次运行，屏幕会依次问你：
 
-长期运行建议用 pm2：
+1. 手机号（带 +86）—— 输入你机器人账号的手机号，回车
+2. 两步验证密码（没有就回车）—— 如果你设了 Telegram 两步验证就填，没有直接回车
+3. Telegram 收到的验证码 —— 你手机会收到一条验证码，填进去
+
+登录成功后，屏幕会显示「登录成功，开始监听消息...」。
+
+凭证会保存在本地 .ai-session 文件里，下次再运行就不用重新登录了。
+
+## 长期运行（用 pm2）
+
+如果你希望关掉终端后机器人还继续跑，用 pm2：
 
 ```
 pm2 start index.js --name mybot
 pm2 save
 pm2 startup
 ```
+
+注意：--name 后面这个名字，要跟你在 .env 里填的 PM2_NAME 一样，否则机器人内的「重启」命令找不到进程。
+
+以后要重启：
+
+```
+pm2 restart mybot
+```
+
+看日志：
+
+```
+pm2 logs mybot
+```
+
+## 常见问题
+
+问：不填搜索接口行不行？
+答：行。联网搜索用不了，其他功能正常，不会报错。
+
+问：不填 PM2_NAME 行不行？
+答：行。只是机器人里的「重启」命令不生效，你手动 pm2 restart 照常能重启。
+
+问：AI_API_BASE 不填行不行？
+答：不行。这是你的 AI 接口地址，必须填，否则 AI 对话用不了。
+
+问：会不会封号？
+答：个人账号自动化有被平台限制的风险，所以强烈建议用小号，不要用主号。风险自负。
 
 ## License
 
