@@ -74,15 +74,6 @@ function removeBan(userId) {
 const configPath = path.resolve(__dirname, "config.json");
 let config = {
   codeKeywords: [
-    "代码", "编程", "爬虫", "命令行", "终端命令", "shell", "bash",
-    "python", "javascript", "typescript",
-    "java", "c++", "cpp", "c#", "c语言", "go语言", "golang",
-    "php", "ruby", "perl", "lua", "rust", "kotlin", "swift",
-    "html", "css", "sql", "json", "xml", "yaml",
-    "vue", "react", "node.js", "nodejs", "django", "flask",
-    "tensorflow", "pytorch", "numpy", "pandas",
-    "脚本", "命令行工具", "终端工具", "自动化脚本",
-    "api接口", "接口文档", "正则表达式",
   ],
   sensitiveGroups: [],
   sensitiveKeywords: [],
