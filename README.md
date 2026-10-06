@@ -7,7 +7,7 @@ Telegram 多功能 AI 机器人，基于个人账号登录（GramJS，非 Bot AP
 ## 功能
 
 对话
-- 多模型 AI 对话，支持 DeepSeek / Gemini / GPT / Qwen / Cloudflare 等，可自定义接入任意 OpenAI 兼容接口
+- 多模型 AI 对话，可接入任意 OpenAI 兼容接口
 - 触发词绑定，@ai 到 @az 可分别绑定不同模型
 - 多模型自动切换，某个模型失败时自动切下一个
 - 每日限额、权重、启用禁用，均可配置
@@ -63,6 +63,30 @@ Telegram 多功能 AI 机器人，基于个人账号登录（GramJS，非 Bot AP
 - 改机器人显示名
 - 改说明书
 
+## 不需要 API Key 的功能
+
+以下功能开箱即用，无需任何 API Key：
+
+- 多语言翻译（Google / Lingva / MyMemory / LibreTranslate 多源）
+- 天气、时间与时区
+- 热搜热榜（微博 / 百度 / 抖音 / B站）
+- GitHub 仓库搜索
+- 汇率、加密货币价格、金价、油价、电影票房
+- 豆瓣电影、塔罗、星座运势、黄历
+- 维基百科、维基数据、DuckDuckGo
+- IP 归属查询
+- 一言、古诗、图书查询
+- 文字转语音（免费音色，无 Key 也能用）
+- 短网址还原、Base64、URL 编解码、摩斯电码
+- 哈希、UUID、JSON 格式化、进制转换
+- 单位换算、汇率换算、日期差、随机数
+- 密码生成、字数统计、颜色换算、二维码
+- 提醒、待办清单、抽签、掷骰子、抛硬币
+
+以上不需要自备 Key。只有 AI 对话、图片识别、图片生成这些，才需要你自己准备模型 API Key。
+
+注意：以上免费接口均为第三方公共服务，可能随时失效、限流或变更，某个接口查不到属正常现象，不影响其他功能。
+
 ## 前置条件
 
 - Node.js 18 以上
@@ -85,10 +109,13 @@ cp .env.example .env
 
 - TELEGRAM_API_ID：在 https://my.telegram.org 申请
 - TELEGRAM_API_HASH：同上
-- DEEPSEEK_API_KEY：DeepSeek 的 Key
-- GEMINI_API_KEY：Gemini 的 Key
+- MY_USERNAME：机器人账号用户名（不带 @）
+- OWNER_ID：管理员自己的 Telegram 数字 ID
+- CUSTOM_API_KEY：你的 AI 接口 Key
+- CUSTOM_API_BASE：你的 AI 接口地址
+- CUSTOM_API_MODEL：你的模型名
 
-其余模型和搜索 Key 为可选项，不填不影响基础对话。
+其余搜索 Key 为可选项，不填不影响基础对话。
 
 ## 运行
 
