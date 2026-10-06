@@ -139,32 +139,28 @@ let usageStats = {
   totalQuestions: 0,
   modelUse: {},
   modelFail: {},
-  searchTavily: 0,
-  searchSerper: 0,
+  search1: 0,
+  search2: 0,
   visionCalls: 0,
   userCount: {},
   since: new Date().toISOString(),
 };
-
-const modelDailyUse = {};
-
 // 在 .env 里配置你自己的 OpenAI 兼容接口：
-//   CUSTOM_API_KEY=你的key
-//   CUSTOM_API_BASE=你的接口地址，例如 https://api.example.com/v1
-//   CUSTOM_API_MODEL=你的模型名
+// AI_API_KEY=你的key
+// AI_API_BASE=你的接口地址，例如 https://api.deepseek.com
+// AI_API_MODEL=你的模型名，例如 deepseek-chat
 // 需要多个 API 时，用管理员命令「加聊天api」添加，或在 config.json 的 customProviders 里配置。
 
 const aiCustom = new OpenAI({
-  apiKey: process.env.CUSTOM_API_KEY || "none",
-  baseURL: process.env.CUSTOM_API_BASE || "https://api.example.com/v1",
+  apiKey: process.env.AI_API_KEY || "none",
+  baseURL: process.env.AI_API_BASE || "https://api.example.com/v1",
 });
-
 const baseProviders = {
   "你的API": {
     name: "你的API",
     client: aiCustom,
-    model: process.env.CUSTOM_API_MODEL || "你的模型名",
-    show: process.env.CUSTOM_API_MODEL || "你的模型名",
+       model: process.env.AI_API_MODEL || "你的模型名",
+    show: process.env.AI_API_MODEL || "你的模型名",
     emoji: "🤖",
     weight: 7,
     vision: false,
@@ -271,7 +267,7 @@ function deriveShow(modelName) {
 
 function writeEnvKey(apiName, newKey) {
   const envMap = {
-    "你的API": "CUSTOM_API_KEY",
+    "你的API": "AI_API_KEY",
   };
   const envKey = envMap[apiName];
   if (!envKey) return false;
@@ -305,13 +301,13 @@ const client = new TelegramClient(new StringSession(sessionString), apiId, apiHa
   connectionRetries: 5,
 });
 
-async function webSearch(query) {
+async function searchSecondary(query) {
   try {
-    const res = await fetch("https://api.tavily.com/search", {
+    const res = await fetch(process.env.SEARCH_API_BASE_2 || "https://api.tavily.com/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        api_key: process.env.TAVILY_API_KEY,
+        api_key: process.env.SEARCH_API_KEY,
         query: query,
         max_results: 5,
       }),
@@ -322,17 +318,16 @@ async function webSearch(query) {
     const urls = data.results.map((r) => r.url).filter(Boolean);
     return { text, urls };
   } catch (e) {
-    log("Tavily 搜索失败:", e.message);
+    log("搜索失败:", e.message);
     return { text: "", urls: [] };
   }
 }
-
-async function serperSearch(query) {
+ async function searchPrimary(query) {
   try {
-    const res = await fetch("https://google.serper.dev/search", {
+    const res = await fetch(process.env.SEARCH_API_BASE || "https://google.serper.dev/search", {
       method: "POST",
       headers: {
-        "X-API-KEY": process.env.SERPER_API_KEY,
+        "X-API-KEY": process.env.SEARCH_API_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ q: query, gl: "cn", hl: "zh-cn", num: 5 }),
@@ -360,11 +355,10 @@ async function serperSearch(query) {
     }
     return { text, urls };
   } catch (e) {
-    log("Serper 搜索失败:", e.message);
+    log("搜索失败:", e.message);
     return { text: "", urls: [] };
   }
 }
-
 async function listModels(apiName) {
   const all = getAllProvidersRaw();
   const p = all[apiName];
@@ -860,8 +854,8 @@ Content policy {
         usageStats.totalQuestions = 0;
         usageStats.modelUse = {};
         usageStats.modelFail = {};
-        usageStats.searchTavily = 0;
-        usageStats.searchSerper = 0;
+        usageStats.search1 = 0;
+        usageStats.search2 = 0;
         usageStats.visionCalls = 0;
         usageStats.userCount = {};
         usageStats.since = todayStr();
@@ -2388,7 +2382,7 @@ IP：${ipLine}`;
       const res = await fetchWithTimeout("https://google.serper.dev/images", {
         method: "POST",
         headers: {
-          "X-API-KEY": process.env.SERPER_API_KEY,
+          "X-API-KEY": process.env.SEARCH_API_KEY,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ q: keyword, gl: "cn", hl: "zh-cn", num: 500 }),
@@ -2578,9 +2572,7 @@ IP：${ipLine}`;
       const p = all.find((x) => x.name === name);
       if (p && p.image) return p;
     }
-    const rai = all.find((x) => x.name === "Rai" && x.image && x.enabled !== false);
-    if (rai) return rai;
-    return all.find((x) => x.image && x.enabled !== false) || null;
+       return all.find((x) => x.image && x.enabled !== false) || null;
   }
 
   const PREFIX_WORDS = ["帮我把", "帮我将", "帮忙把", "麻烦你帮我", "麻烦帮我", "麻烦把", "请帮我把", "请帮我", "请把", "请将", "能不能把", "可以帮我", "可以把我", "给我把", "替我把", "把这句话", "把这句", "把这段", "把这个", "把那个", "把他", "把她", "把它", "把这", "把", "帮我把", "帮忙", "帮我", "给我", "替我", "请", "请问", "麻烦你", "麻烦", "能不能", "可不可以", "能否", "可以", "我想让你", "我想", "我要你", "要你", "让你", "叫你", "将", "拜托", "劳驾", "辛苦你", "辛苦", "please", "can you", "could you", "would you", "pls", "plz"];
@@ -3225,9 +3217,8 @@ ${modelFailLines}
 ${limitLines}
 
 🔍 搜索调用：
-  Tavily：${usageStats.searchTavily} 次
-  Serper：${usageStats.searchSerper} 次
-
+    接口一：${usageStats.search1} 次
+  接口二：${usageStats.search2} 次
 🖼️ 识图调用：${usageStats.visionCalls} 次
 
 👑 最活跃用户 TOP 5：
@@ -3416,14 +3407,12 @@ ${topLines}`;
       return true;
     }
 
-    if (cmd === "查看搜索key") {
+       if (cmd === "查看搜索key") {
       const mask = (k) => k ? `${k.slice(0, 8)}****${k.slice(-4)}` : "未设置";
-      const serper = process.env.SERPER_API_KEY || "";
-      const tavily = process.env.TAVILY_API_KEY || "";
+      const searchKey = process.env.SEARCH_API_KEY || "";
       await client.sendMessage(msg.peerId, {
         message: `🔑 当前搜索 Key：
-Serper: ${mask(serper)}
-Tavily: ${mask(tavily)}`,
+搜索: ${mask(searchKey)}`,
         replyTo: msg.id,
       });
       return true;
@@ -3625,7 +3614,7 @@ Tavily: ${mask(tavily)}`,
 
     // ===== 换搜索key（交互式）=====
     if (cmd === "换搜索key") {
-      const names = ["Serper", "Tavily"];
+     const names = ["搜索"];
       const header = "🔎 换哪个搜索的 key？\n" + names.map((n, i) => `${i + 1}. ${n}`).join("\n");
       const rec = await startPick("searchKeyPick", header, names, msg.id, { apiList: names });
       if (!rec) return true;
@@ -4595,7 +4584,7 @@ Tavily: ${mask(tavily)}`,
           const searchName = im.searchName;
           clearTimeout(im.timer);
           interactiveManualMap.delete(imKey);
-          const searchMap = { Serper: "SERPER_API_KEY", Tavily: "TAVILY_API_KEY" };
+          const searchMap = { 搜索: "SEARCH_API_KEY" };
           const envKey = searchMap[searchName];
           const ok = envKey ? writeEnvKeyByVar(envKey, newKey) : false;
           try {
@@ -7004,33 +6993,32 @@ Tavily: ${mask(tavily)}`,
       bookContext = await getOpenLibraryContext(cleanQuestion);
     }
 
-    let firstUrl = "";
+       let firstUrl = "";
     if (!hasPhoto) {
       if (needTavily) {
-        usageStats.searchTavily++;
+        usageStats.search2++;
         const searchQuery = questionWithTime.replace("联网搜索", "").trim();
-        log("【搜索】Tavily 关键词：", searchQuery);
-        const r = await webSearch(searchQuery);
+        log("【搜索】关键词：", searchQuery);
+        const r = await searchSecondary(searchQuery);
         searchContext = r.text;
         firstUrl = r.urls[0] || "";
       } else if (!isLocalOnly) {
-        usageStats.searchSerper++;
+        usageStats.search1++;
         const searchQuery = questionWithTime.trim();
-        log("【搜索】Serper 关键词：", searchQuery);
-        const [serperR, wikiR, wikidataR, ddgR] = await Promise.all([
-          serperSearch(searchQuery),
+        log("【搜索】关键词：", searchQuery);
+        const [primaryR, wikiR, wikidataR, ddgR] = await Promise.all([
+          searchPrimary(searchQuery),
           getWikiContext(cleanQuestion),
           getWikidataContext(cleanQuestion),
           getDuckDuckGoContext(cleanQuestion),
         ]);
-        simpleContext = serperR.text;
-        firstUrl = serperR.urls[0] || "";
+        simpleContext = primaryR.text;
+        firstUrl = primaryR.urls[0] || "";
         wikiContext = wikiR;
         wikidataContext = wikidataR;
         ddgContext = ddgR;
       }
     }
-
     if (firstUrl) {
       log("【抓取】URL：", firstUrl);
       const pageText = await fetchWebContent(firstUrl);
