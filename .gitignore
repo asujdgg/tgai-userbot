@@ -1,0 +1,27 @@
+# 依赖
+node_modules/
+
+# 敏感凭证与会话
+.ai-session
+.env
+
+# 配置与数据
+config.json
+banlist.json
+
+# 聊天记录与日志
+chatlog-*.log
+bot-*.log
+
+# 用户自写说明书
+manual-user.txt
+manual-admin.txt
+
+# 备份文件
+index.js.bak*
+index.js.ok
+config.json.ok
+
+# 系统文件
+.DS_Store
+Thumbs.db
