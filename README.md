@@ -1,6 +1,6 @@
 # tgai-userbot
 
-Telegram 多功能 AI 机器人，基于个人账号登录（GramJS，非 Bot API）+ OpenAI SDK。
+Telegram 多功能 AI 机器人，基于个人账号接入OpenAI SDK。
 
 说明：本项目不是开箱即用，也不自带任何 API。使用前需自行准备 Telegram 登录凭证和 AI 模型 API Key。
 
