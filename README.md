@@ -1,0 +1,111 @@
+# tgai-userbot
+
+Telegram 多功能 AI 机器人，基于个人账号登录（GramJS，非 Bot API）+ OpenAI SDK。
+
+说明：本项目不是开箱即用，也不自带任何 API。使用前需自行准备 Telegram 登录凭证和 AI 模型 API Key。
+
+## 功能
+
+对话
+- 多模型 AI 对话，支持 DeepSeek / Gemini / GPT / Qwen / Cloudflare 等，可自定义接入任意 OpenAI 兼容接口
+- 触发词绑定，@ai 到 @az 可分别绑定不同模型
+- 多模型自动切换，某个模型失败时自动切下一个
+- 每日限额、权重、启用禁用，均可配置
+- 多轮上下文记忆
+
+图片
+- 图片识别（识图池，可配置多个识图模型）
+- 图片生成（生图 API，支持自定义）
+- 图片搜索
+
+语音
+- 语音回复，支持音色库与语音人格
+- 音色可切换，可绑定到群或某个用户
+- 主用 Fish Audio，失败时自动降级到免费 TTS
+
+文本工具
+- 多语言翻译
+- 短网址还原
+- Base64 编解码、URL 编解码、摩斯电码
+- 哈希（MD5 / SHA1 / SHA256）、UUID
+- JSON 格式化
+- 进制转换、罗马数字、时间戳转换
+- 单位换算、汇率换算、日期差
+- 随机数、抽签、掷骰子、抛硬币
+- 密码生成
+- 字数统计
+- 颜色换算
+
+查询类
+- 天气
+- 时间与时区
+- 热搜热榜（微博 / 百度 / 抖音 / B站）
+- GitHub 仓库搜索
+- 汇率、加密货币价格、金价、油价、电影票房
+- 豆瓣电影、塔罗、星座运势、黄历
+- 维基百科、维基数据、DuckDuckGo
+- IP 归属查询
+- 一言、古诗
+- 图书查询
+
+群管理
+- 拉黑、解封
+- 限速（递增式）
+- 群聊记录开关、条数配置、按日期查询
+- 管理员列表、成员列表查询
+- 群头像、用户信息、头像描述
+
+管理员功能
+- 交互式命令（弹列表，回数字）
+- 服务器状态、测速
+- 日志查看、日志列表
+- 用量报告
+- 改机器人显示名
+- 改说明书
+
+## 前置条件
+
+- Node.js 18 以上
+- 一个 Telegram 个人账号（不是 Bot API 机器人）
+- 在 https://my.telegram.org 申请到的 api_id 和 api_hash
+- 至少一个 AI 模型的 API Key
+
+## 安装
+
+```
+git clone <你的仓库地址>
+cd tgai-userbot
+npm install dotenv telegram input openai
+cp .env.example .env
+```
+
+## 配置
+
+编辑 .env，填入：
+
+- TELEGRAM_API_ID：在 https://my.telegram.org 申请
+- TELEGRAM_API_HASH：同上
+- DEEPSEEK_API_KEY：DeepSeek 的 Key
+- GEMINI_API_KEY：Gemini 的 Key
+
+其余模型和搜索 Key 为可选项，不填不影响基础对话。
+
+## 运行
+
+```
+node index.js
+```
+
+首次运行会提示输入手机号、验证码，登录成功后凭证会保存到 .ai-session。
+
+长期运行建议用 pm2：
+
+```
+pm2 start index.js --name tg-ai
+pm2 save
+pm2 startup
+```
+
+## License
+
+MIT
