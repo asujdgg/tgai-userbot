@@ -59,10 +59,10 @@ Telegram 多功能 AI 机器人，基于个人账号接入 + OpenAI SDK。
 - 重复提问拦截：同一个问题短时间内不重复消耗额度
 - 关键词拦截：命中指定关键词的请求直接忽略
 - 群聊记录开关、条数配置、按日期查询
-- 管理员列表、成员列表查询
+- 群管理员列表、群成员列表查询
 - 群头像、用户信息、头像描述
 
-管理员功能
+控制台功能
 - 交互式命令（弹列表，回数字）
 - 服务器状态、测速
 - 日志查看、日志列表
@@ -117,7 +117,7 @@ cp .env.example .env
 - TELEGRAM_API_ID：账号凭证
 - TELEGRAM_API_HASH：账号凭证
 - MY_USERNAME：机器人账号用户名，不带 @
-- OWNER_ID：管理员自己的数字 ID
+- OWNER_ID：号主自己的数字 ID
 - AI_API_KEY：你的 AI 接口 Key
 - AI_API_BASE：你的 AI 接口地址
 - AI_API_MODEL：你的模型名
