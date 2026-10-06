@@ -74,7 +74,7 @@ Telegram 多功能 AI 机器人，基于个人账号接入 + OpenAI SDK。
 
 以下功能开箱即用，无需任何 API Key：
 
-- 多语言翻译（Google / Lingva / MyMemory / LibreTranslate 多源）
+- 多语言翻译（多源自动切换）
 - 天气、时间与时区
 - 热搜热榜（微博 / 百度 / 抖音 / B站）
 - GitHub 仓库搜索
@@ -114,16 +114,20 @@ cp .env.example .env
 
 编辑 .env，填入：
 
-- TELEGRAM_API_ID
-- TELEGRAM_API_HASH
+- TELEGRAM_API_ID：账号凭证
+- TELEGRAM_API_HASH：账号凭证
 - MY_USERNAME：机器人账号用户名，不带 @
 - OWNER_ID：管理员自己的数字 ID
-- CUSTOM_API_KEY：你的 AI 接口 Key
-- CUSTOM_API_BASE：你的 AI 接口地址
-- CUSTOM_API_MODEL：你的模型名
+- AI_API_KEY：你的 AI 接口 Key
+- AI_API_BASE：你的 AI 接口地址
+- AI_API_MODEL：你的模型名
 - PM2_NAME：你用 pm2 启动脚本时起的进程名，用于机器人内的「重启」命令
 
-其余搜索 Key 为可选项，不填不影响基础对话。
+可选（不填不影响基础对话）：
+
+- SEARCH_API_BASE：搜索接口一地址
+- SEARCH_API_BASE_2：搜索接口二地址
+- SEARCH_API_KEY：两个搜索接口共用的 Key
 
 ## 运行
 
