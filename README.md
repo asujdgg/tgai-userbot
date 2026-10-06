@@ -1,4 +1,4 @@
-# tgai-userbot
+// 使用前请先阅读以下说明，里面写了安装和配置步骤
 
 Telegram 多功能 AI 机器人，基于个人账号接入 + OpenAI SDK。
 
